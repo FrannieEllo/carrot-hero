@@ -4,7 +4,7 @@
     "host": "vite --host",
     "build": "vite build",
     "preview": "vite build && vite preview",
-    "deploy": "vite build --base=/webdev-template/ && gh-pages -d dist"
+    "deploy": "vite build --base=/final-prototype/ && gh-pages -d dist"
   },
   "repository": {
     "type": "git",
