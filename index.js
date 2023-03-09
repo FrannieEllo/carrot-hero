@@ -11,7 +11,7 @@ let img, uncollectedimg, collectedimg;
 var score = 0;
 var lives = 3;
 var timer = 0;
-var level = 1;
+var level = 2;
 let total = "Carrots: " + score;
 let hp = "Lives: " + lives;
 
@@ -130,96 +130,198 @@ window.setup = () => {
 
 
 // level 1, aka the "tutorial" level
-if (level == 1) {
-  // lvl 1 barriers
-  
-  let wallTop = new walls.Sprite(400, 0);
-  wallTop.rotation = 90;
+  if (level == 1) {
+    console.log("You're on level " + level);
+    
+    // lvl 1 barriers
+    
+    let wallTop = new walls.Sprite(400, 0);
+    wallTop.rotation = 90;
 
-  new walls.Sprite(-790, 250);
-  new walls.Sprite(3800, 250);
+    new walls.Sprite(-790, 250);
+    new walls.Sprite(3800, 250);
 
-  let g1 = new ground.Sprite(0, 500, 1550, 50);
-  g1.img = "./assets/g1.png"
-  let g2 = new ground.Sprite(1250, 500, 700, 50);
-  g2.img = "./assets/g2.png"
+    let g1 = new ground.Sprite(0, 500, 1550, 50);
+    g1.img = "./assets/g1.png"
+    let g2 = new ground.Sprite(1250, 500, 700, 50);
+    g2.img = "./assets/g2.png"
 
-  let g4 = new ground.Sprite(3500, 500, 2000, 50)
-  g4.img = "./assets/g4.png"
+    let g4 = new ground.Sprite(3500, 500, 2000, 50)
+    g4.img = "./assets/g4.png"
 
-  // lvl 1 stink bug
-  let bug1 = new bugs.Sprite();
-  bug1.x = 1000;
-  bug1.y = 450; // ask hannah in class
-  //if (bug1.x > 1100) {
-  //  bug1.vel.x = -1;
-  //} else if (bug1.x < 950) {
-  //  bug1.vel.x = 1;
-  //}
+    // lvl 1 stink bug
+    let bug1 = new bugs.Sprite();
+    bug1.x = 1000;
+    bug1.y = 450; // ask hannah in class
+    //if (bug1.x > 1100) {
+    //  bug1.vel.x = -1;
+    //} else if (bug1.x < 950) {
+    //  bug1.vel.x = 1;
+    //}
 
-  // lvl 1 carrots
-  let carrot1 = new carrots.Sprite();
-  carrot1.x = 250;
-  carrot1.y = 125;
+    // lvl 1 carrots
+    let carrot1 = new carrots.Sprite();
+    carrot1.x = 250;
+    carrot1.y = 125;
 
-  let carrot2 = new carrots.Sprite();
-  carrot2.x = 900;
-  carrot2.y = 425;
+    let carrot2 = new carrots.Sprite();
+    carrot2.x = 900;
+    carrot2.y = 425;
 
-  let carrot3 = new carrots.Sprite();
-  carrot3.x = 1850;
-  carrot3.y = 400;
+    let carrot3 = new carrots.Sprite();
+    carrot3.x = 1850;
+    carrot3.y = 400;
 
-  let carrot4 = new carrots.Sprite();
-  carrot4.x = 2750;
-  carrot4.y = 400;
+    let carrot4 = new carrots.Sprite();
+    carrot4.x = 2750;
+    carrot4.y = 400;
 
-  let carrot5 = new carrots.Sprite();
-  carrot5.x = 2975;
-  carrot5.y = 50;
+    let carrot5 = new carrots.Sprite();
+    carrot5.x = 2975;
+    carrot5.y = 50;
 
-  player.overlaps(carrots, collect);
+    player.overlaps(carrots, collect);
 
-  // lvl 1 falling platforms
-  for (let i = 0; i < 4; i++) {
+    // lvl 1 falling platforms
+    for (let i = 0; i < 4; i++) {
+      fallplat = new falling.Sprite();
+      fallplat.x = 1660 + 115 * i;
+      fallplat.y = 350;
+    }
+
+    // lvl 1 plat form tiles
+    new Tiles(
+      [
+        "............................",
+        "............................",
+        "..=.........................",
+        "........=................=..",
+        ".=.=...................=...",
+        ".......................=....",
+        ".............=....=.........",
+        "......=.....==....=..==.....",
+        "......=....===....==........",
+        "......=....===....==........",
+      ],
+      0,
+    200,
+      platform.w + 4,
+      platform.h + 4
+    );
+
+    let exit1 = new exit.Sprite(3300, 350);
+    player.overlaps(exit1);
+
+  } else if (level == 2) {// close level 1, start level 2
+    console.log("You're on level " + level);
+
+    // lvl template
+    // lvl 1 barriers
+    
+    let wallTop = new walls.Sprite(400, -500);
+    wallTop.rotation = 90;
+
+    new walls.Sprite(-790, 250);
+    new walls.Sprite(8000, 250);
+
+    let g1 = new ground.Sprite(0, 500, 5600, 50);
+    //g1.img = "./assets/g1.png"
+    let g2 = new ground.Sprite(4000, 500, 700, 50);
+    g2.img = "./assets/g2.png"
+
+    //let g4 = new ground.Sprite(3500, 500, 2000, 50)
+   // g4.img = "./assets/g4.png"
+
+    // lvl 1 stink bug
+    let bug1 = new bugs.Sprite();
+    bug1.x = 1250;
+    bug1.y = 450; 
+    
+    let bug2 = new bugs.Sprite();
+    bug2.x = 1750;
+    bug2.y = 450;
+    
+    // ask hannah in class
+    //if (bug1.x > 1100) {
+    //  bug1.vel.x = -1;
+    //} else if (bug1.x < 950) {
+    //  bug1.vel.x = 1;
+    //}
+
+    // lvl 1 carrots
+    let carrot1 = new carrots.Sprite();
+    carrot1.x = 250;
+    carrot1.y = 125;
+
+    let carrot2 = new carrots.Sprite();
+    carrot2.x = 900;
+    carrot2.y = 425;
+
+    let carrot3 = new carrots.Sprite();
+    carrot3.x = 1850;
+    carrot3.y = 400;
+
+    let carrot4 = new carrots.Sprite();
+    carrot4.x = 2750;
+    carrot4.y = 400;
+
+    let carrot5 = new carrots.Sprite();
+    carrot5.x = 2975;
+    carrot5.y = 50;
+
+    player.overlaps(carrots, collect);
+
+    // lvl 2 falling platforms
     fallplat = new falling.Sprite();
-    fallplat.x = 1660 + 115 * i;
+    fallplat.x = 6000;
     fallplat.y = 350;
+
+
+    // lvl template
+    
+
+    // lvl 2 plat form tiles
+    new Tiles(
+      [
+        "........................................",
+        "........................................",
+        "........................................",
+        "....=...................................",
+        "......==................................",
+        "........................................",
+        "........................................",
+        "..........=.............................",
+        "...........==...........................",
+        "........................................",
+        "........................................",
+        "..............==........................",
+        "...................................=....",
+        "........................................",
+        "........................................",
+        "........................................",
+        "........................................",
+        "......................==.........==.....",
+        ".................=....==................",
+        ".......=.........=....==........=.......",
+        "...=...=.........=....==................",
+        "...=...=.........=....==................",
+      ],
+      0,
+      -150,
+      platform.w + 4,
+      platform.h + 4
+    );
+
+    let exit1 = new exit.Sprite(5000, 350);
+    player.overlaps(exit1);
   }
-
-  // lvl 1 plat form tiles
-  new Tiles(
-    [
-      "............................",
-      "............................",
-      "..=.........................",
-      "........=................=..",
-      ".=.=...................=...",
-      ".......................=....",
-      ".............=....=.........",
-      "......=.....==....=..==.....",
-      "......=....===....==........",
-      "......=....===....==........",
-    ],
-    0,
-  200,
-    platform.w + 4,
-    platform.h + 4
-  );
-
-  let exit1 = new exit.Sprite(3300, 350);
-  player.overlaps(exit1);
-} // close level 1
-
 }
 
 
 window.draw = () => {
   background("lightblue");
   
-  // hud
-
-  // health
+  // hud - health
  if (lives == 3) {
     image(img, 150, 50);
     image(img, 100, 50);
@@ -231,28 +333,38 @@ window.draw = () => {
     image(img, 50, 50);
   }
 
-  // carrot score
+  // hud - carrot score
   for (let i = 1; i < 6; i++) {
     image(uncollectedimg, 450 + i * 50, 40);
   }
-
   for (let x = 0; x < score; x++) {
     image(collectedimg, 500 + x * 50, 40);
   }
 
+  // hud text health, score
+  total = "Carrots: " + score;
+  text(total, 400, 60);
+
+  hp = "Lives: " + lives;
+  text(hp, 300, 60);
+
 
   // tutorial message events
-  tutorialMessage = "";
-  if (player.x > -800 && player.x < -375) {
-    tutorialMessage = "Welcome to Carrot Hero! Use your Right and Left arrow keys to move.";
-  } else if (player.x > -400 && player.x < 540) {
-    tutorialMessage = "Use your Up arrow key to jump!";
-  } else if (player.x > 600 && player.x < 1250) {
-    tutorialMessage = "Avoid the stink bugs...";
-  } else if (player.x > 1400 && player.x < 2000) {
-    tutorialMessage = "and watch out for surprises ;)";
 
+  tutorialMessage = "";
+  if (level == 1 ) {
+    if (player.x > -800 && player.x < -375) {
+      tutorialMessage = "Welcome to Carrot Hero! Use your Right and Left arrow keys to move.";
+    } else if (player.x > -400 && player.x < 540) {
+      tutorialMessage = "Use your Up arrow key to jump!";
+    } else if (player.x > 600 && player.x < 1250) {
+      tutorialMessage = "Avoid the stink bugs...";
+    } else if (player.x > 1400 && player.x < 2000) {
+      tutorialMessage = "and watch out for surprises ;)";
+  
+    }
   }
+
   
   // tutorial message display
   text(tutorialMessage, width / 2, 150);
@@ -260,12 +372,6 @@ window.draw = () => {
 
   text("(" + mouseX + ", " + mouseY + ")", mouseX, mouseY);
   allSprites.debug = mouse.pressing();
-
-  total = "Carrots: " + score;
-  text(total, 300, 60);
-
-  hp = "Lives: " + lives;
-  text(hp, 400, 60);
   
   carrots.ani = carrotsDefault;
   if (player.overlapped(carrots)) {
@@ -277,6 +383,12 @@ window.draw = () => {
   bugs.ani = bugsDefault;
 
   camera.x = player.x;
+ //camera.y = player.y - 150;
+  if (player.y < 30) {
+    camera.y = player.y - 50;
+  } else {
+    camera.y = 275;
+  }
   // player x movement
   if (kb.pressing("right")) {
     player.vel.x = 5;
@@ -298,10 +410,16 @@ window.draw = () => {
     player.vel.y = 50;
   }
 
-  // falling platform
-  for (let i = 0; i < 4; i++) {
-    if (player.collides(falling[i])) {
-      falling[i].collider = "dynamic";
+  // lvl 1 falling platform
+  if (level == 1) {
+    for (let i = 0; i < 4; i++) {
+      if (player.collides(falling[i])) {
+        falling[i].collider = "dynamic";
+      }
+    }
+  } else if ( level == 2) {
+    if (player.collides(falling)) {
+      falling.collider = "dynamic";
     }
   }
 
