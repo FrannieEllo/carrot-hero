@@ -64,6 +64,8 @@ window.setup = () => {
     "./assets/bug-2.png"
   )
 
+  bugsDefault.frameDelay = 64;
+
   // walls main
   walls = new Group();
   walls.width = 30;
