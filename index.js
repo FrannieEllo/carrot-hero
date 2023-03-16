@@ -6,16 +6,19 @@ let playerIdle, playerJump, playerSuccess, playerDamage, bugsDefault;
 let tutorialMessage;
 let walls;
 let carrotsDefault;
-let img, uncollectedimg, collectedimg, barnimg;
+let img, uncollectedimg, collectedimg, barnimg, bgImg;
+var x1 = 0;
+var x2;
+var scrollSpeed = 0.25;
 var score = 0;
 var lives = 3;
 var level = 1;
 let total = "Carrots: " + score;
-let hp = "Lives: " + lives;
+let hp = "Lives: " + lives; 
 
 // game setup
 window.setup = () => {
-
+	bgImg = loadImage("./assets/game-background.png");
   img = loadImage("./assets/heart.png");
   uncollectedimg = loadImage("./assets/carrot-uncollected.png");
   collectedimg = loadImage("./assets/carrot-small.png");
@@ -24,9 +27,9 @@ window.setup = () => {
 
   // background & environment main
   createCanvas(800, 500);
-  background("lightblue");
   world.gravity.y = 90;
   score = 0;
+  x2 = width;
 
 
   // main player
@@ -137,7 +140,182 @@ window.setup = () => {
   bugs.friction = 0;
   bugs.collider = "kinematic";
 
+  // run game
+  levels();
 
+};
+  
+
+window.draw = () => {
+  clear();
+  image(bgImg, x1, 0, width, height);
+  image(bgImg, x2, 0, width, height);
+  
+  x1 -= scrollSpeed;
+  x2 -= scrollSpeed;
+  
+  if (x1 < -width){
+    x1 = width;
+  }
+  if (x2 < -width){
+    x2 = width;
+  }
+    player.overlaps(exit);
+  if (level == 0) { // game menu
+    player.x = 0;
+    player.y = 0;
+    // menu
+    text("Carrot Hero", 375, 100);
+    image(barnimg, 245, 150, barnimg.width / 2, barnimg.height / 2);
+    rect(100, 390, 250, 80); // play lvl 1 button
+    text("Level 1", 225, 430);
+    rect(400, 390, 250, 80); // play lvl 1 button
+    text("Level 2", 525, 430);
+  } //else {
+    //player.x = -750;
+    //player.y = 450;
+ // }
+  // hud - health
+  if (level != 0) {
+    if (lives == 3) {
+      image(img, 150, 50);
+      image(img, 100, 50);
+      image(img, 50, 50);
+    } else if (lives == 2) {
+      image(img, 100, 50);
+      image(img, 50, 50);
+    } else if (lives == 1) {
+      image(img, 50, 50);
+    }
+    // hud - carrot score
+    for (let i = 1; i < 6; i++) {
+      image(uncollectedimg, 450 + i * 50, 40);
+    }
+    for (let x = 0; x < score; x++) {
+      image(collectedimg, 500 + x * 50, 40);
+    }
+
+    // hud text health, score
+    total = "Carrots: " + score;
+    text(total, 400, 60);
+
+    hp = "Lives: " + lives;
+    text(hp, 300, 60);
+  }
+
+
+
+  // tutorial message events
+
+  tutorialMessage = "";
+  if (level == 1 ) {
+    if (player.x > -800 && player.x < -375) {
+      tutorialMessage = "Welcome to Carrot Hero! Use your Right and Left arrow keys to move.";
+    } else if (player.x > -400 && player.x < 540) {
+      tutorialMessage = "Use your Up arrow key to jump!";
+    } else if (player.x > 600 && player.x < 1250) {
+      tutorialMessage = "Avoid the stink bugs...";
+    } else if (player.x > 1400 && player.x < 2000) {
+      tutorialMessage = "and watch out for surprises ;)";
+  
+    }
+  }
+
+  
+  // tutorial message display
+  text(tutorialMessage, width / 2, 150);
+  textAlign(CENTER);
+
+  text("(" + mouseX + ", " + mouseY + ")", mouseX, mouseY);
+  allSprites.debug = mouse.pressing();
+  
+  carrots.ani = carrotsDefault;
+  if (player.overlapped(carrots)) {
+    score+=1;
+    console.log("You collected a carrot!");
+    console.log(score);
+  } 
+
+  bugs.ani = bugsDefault;
+
+  camera.x = player.x;
+ //camera.y = player.y - 150;
+  if (player.y < 30) {
+    camera.y = player.y - 50;
+  } else {
+    camera.y = 275;
+  }
+  // player x movement
+  if (kb.pressing("right")) {
+    player.vel.x = 5;
+    player.mirror.x = false;
+  } else if (kb.pressing("left")) {
+    player.vel.x = -5;
+    player.mirror.x = true;
+  } else {
+    player.vel.x = 0;
+    player.ani = playerIdle;
+
+  }
+
+  // player y movement
+  if (kb.presses("up")) {
+    player.vel.y = -27;
+    player.ani = playerJump;
+  } else if (kb.pressing("down")) {
+    player.vel.y = 50;
+  }
+
+  // lvl 1 falling platform
+  if (level == 1) {
+    for (let i = 0; i < 4; i++) {
+      if (player.collides(falling[i])) {
+        falling[i].collider = "dynamic";
+      }
+    }
+  } else if ( level == 2) {
+    if (player.collides(falling)) {
+      falling.collider = "dynamic";
+    }
+  }
+
+  // collision events
+  if (player.overlapping(exit)) {
+    let msg = "Woohoo! You made it to the end with " + score + " carrots!! Starting next level in 5 seconds...";
+    text(msg, width / 2, 90);
+    textAlign(CENTER);
+    console.log("That's the end! Thanks for playing.");
+    level+=1;
+    console.log(level);
+    player.ani = playerSuccess;
+  } else if (player.collides(g5)) {
+    lives -= 1;
+    resetPlayer();
+    console.log("Uh oh, you fell!");
+  } else if (player.overlapped(exit)) {
+    level+=1;
+    console.log(level);
+  }
+
+  // damage to health bar
+  if (player.collides(bugs)) {
+    lives -=1;
+    player.ani = playerDamage;
+  } else if (player.collides(spikes)) {
+    lives -=1;
+    player.ani = playerDamage;
+  }
+
+  if (lives == 0) {
+    gameOver();
+  }
+
+};
+
+window.mouseClicked = () => {
+};
+
+function levels() {
 // level selector
   if (level == 1) {
     lives = 3;
@@ -335,166 +513,7 @@ window.setup = () => {
     let exit2 = new exit.Sprite(5000, 275);
     player.overlaps(exit2);
   }
-};
-  
-
-window.draw = () => {
-  clear();
-  background("lightblue");
-  player.overlaps(exit);
-  if (level == 0) { // game menu
-    player.x = 0;
-    player.y = 0;
-    // menu
-    text("Carrot Hero", 375, 100);
-    image(barnimg, 245, 150, barnimg.width / 2, barnimg.height / 2);
-    rect(100, 390, 250, 80); // play lvl 1 button
-    text("Level 1", 225, 430);
-    rect(400, 390, 250, 80); // play lvl 1 button
-    text("Level 2", 525, 430);
-  } //else {
-    //player.x = -750;
-    //player.y = 450;
- // }
-  // hud - health
-  if (level != 0) {
-    if (lives == 3) {
-      image(img, 150, 50);
-      image(img, 100, 50);
-      image(img, 50, 50);
-    } else if (lives == 2) {
-      image(img, 100, 50);
-      image(img, 50, 50);
-    } else if (lives == 1) {
-      image(img, 50, 50);
-    }
-    // hud - carrot score
-    for (let i = 1; i < 6; i++) {
-      image(uncollectedimg, 450 + i * 50, 40);
-    }
-    for (let x = 0; x < score; x++) {
-      image(collectedimg, 500 + x * 50, 40);
-    }
-
-    // hud text health, score
-    total = "Carrots: " + score;
-    text(total, 400, 60);
-
-    hp = "Lives: " + lives;
-    text(hp, 300, 60);
-  }
-
-
-
-  // tutorial message events
-
-  tutorialMessage = "";
-  if (level == 1 ) {
-    if (player.x > -800 && player.x < -375) {
-      tutorialMessage = "Welcome to Carrot Hero! Use your Right and Left arrow keys to move.";
-    } else if (player.x > -400 && player.x < 540) {
-      tutorialMessage = "Use your Up arrow key to jump!";
-    } else if (player.x > 600 && player.x < 1250) {
-      tutorialMessage = "Avoid the stink bugs...";
-    } else if (player.x > 1400 && player.x < 2000) {
-      tutorialMessage = "and watch out for surprises ;)";
-  
-    }
-  }
-
-  
-  // tutorial message display
-  text(tutorialMessage, width / 2, 150);
-  textAlign(CENTER);
-
-  text("(" + mouseX + ", " + mouseY + ")", mouseX, mouseY);
-  allSprites.debug = mouse.pressing();
-  
-  carrots.ani = carrotsDefault;
-  if (player.overlapped(carrots)) {
-    score+=1;
-    console.log("You collected a carrot!");
-    console.log(score);
-  } 
-
-  bugs.ani = bugsDefault;
-
-  camera.x = player.x;
- //camera.y = player.y - 150;
-  if (player.y < 30) {
-    camera.y = player.y - 50;
-  } else {
-    camera.y = 275;
-  }
-  // player x movement
-  if (kb.pressing("right")) {
-    player.vel.x = 5;
-    player.mirror.x = false;
-  } else if (kb.pressing("left")) {
-    player.vel.x = -5;
-    player.mirror.x = true;
-  } else {
-    player.vel.x = 0;
-    player.ani = playerIdle;
-
-  }
-
-  // player y movement
-  if (kb.presses("up")) {
-    player.vel.y = -27;
-    player.ani = playerJump;
-  } else if (kb.pressing("down")) {
-    player.vel.y = 50;
-  }
-
-  // lvl 1 falling platform
-  if (level == 1) {
-    for (let i = 0; i < 4; i++) {
-      if (player.collides(falling[i])) {
-        falling[i].collider = "dynamic";
-      }
-    }
-  } else if ( level == 2) {
-    if (player.collides(falling)) {
-      falling.collider = "dynamic";
-    }
-  }
-
-  // collision events
-  if (player.overlapping(exit)) {
-    let msg = "Woohoo! You made it to the end with " + score + " carrots!! Starting next level in 5 seconds...";
-    text(msg, width / 2, 90);
-    textAlign(CENTER);
-    console.log("That's the end! Thanks for playing.");
-    level+=1;
-    console.log(level);
-    player.ani = playerSuccess;
-  } else if (player.collides(g5)) {
-    lives -= 1;
-    resetPlayer();
-    console.log("Uh oh, you fell!");
-  } else if (player.overlapped(exit)) {
-    level+=1;
-    console.log(level);
-  }
-
-  // damage to health bar
-  if (player.collides(bugs)) {
-    lives -=1;
-    player.ani = playerDamage;
-  } else if (player.collides(spikes)) {
-    lives -=1;
-    player.ani = playerDamage;
-  }
-
-  if (lives == 0) {
-    gameOver();
-  }
-
-};
-
-window.mouseClicked = () => {
-};
+}
 
 function resetPlayer() {
   player.vel.x = 0;
