@@ -148,7 +148,10 @@ window.setup = () => {
   levels();
 
 }
+
+function game() {
   
+}
 
 window.draw = () => {
   clear();
@@ -319,11 +322,13 @@ window.mouseClicked = () => {
     if (mouseX > 265 && mouseX < 493) { // lvl 1
       if (mouseY > 390 && mouseY < 470) {
         level = 1;
+        levels();
         console.log("You are now on the level 1!");
+        console.log("Player x: " + player.x + "  Player y: " + player.y);
       }
     }
-    }
   }
+}
 
 function levels() {
   player.x = -750;
