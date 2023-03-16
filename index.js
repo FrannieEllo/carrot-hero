@@ -7,29 +7,33 @@ let playerIdle, playerJump, playerSuccess, playerDamage, bugsDefault;
 let tutorialMessage
 let walls, bgm, pickup;
 let carrotsDefault;
-let img, uncollectedimg, collectedimg, barnimg;
+let img, uncollectedimg, collectedimg, barnimg, bgImg, buttonImg, logoImg;
+var x1 = 0;
+var x2;
+var scrollSpeed = 0.25;
 var score = 0;
 var lives = 3;
 var timer = 0;
-var level = 2;
+var level = 0;
 var menu = 0;
 let total = "Carrots: " + score;
-let hp = "Lives: " + lives;
+let hp = "Lives: " + lives; 
 
 // game setup
 window.setup = () => {
-
+	bgImg = loadImage("./assets/game-background.png");
   img = loadImage("./assets/heart.png");
   uncollectedimg = loadImage("./assets/carrot-uncollected.png");
   collectedimg = loadImage("./assets/carrot-small.png");
   barnimg = loadImage("./assets/barn.png");
-
+  buttonImg = loadImage("./assets/button.png");
+  logoImg = loadImage("./assets/carrot-hero-logo.png");
 
   // background & environment main
   createCanvas(800, 500);
-  background("lightblue");
   world.gravity.y = 90;
   score = 0;
+  x2 = width;
 
 
   // main player
@@ -148,18 +152,27 @@ window.setup = () => {
 
 window.draw = () => {
   clear();
-  background("lightblue");
-  player.overlaps(exit);
+  image(bgImg, x1, 0, width, height);
+  image(bgImg, x2, 0, width, height);
+  
+  x1 -= scrollSpeed;
+  x2 -= scrollSpeed;
+  
+  if (x1 < -width){
+    x1 = width;
+  }
+  if (x2 < -width){
+    x2 = width;
+  }
+    player.overlaps(exit);
   if (level == 0) { // game menu
     player.x = 0;
     player.y = 0;
     // menu
-    text("Carrot Hero", 375, 100);
+    image(logoImg, 220, 25, logoImg.width, logoImg.height);
     image(barnimg, 245, 150, barnimg.width / 2, barnimg.height / 2)
-    rect(100, 390, 250, 80); // play lvl 1 button
-    text("Level 1", 225, 430);
-    rect(400, 390, 250, 80); // play lvl 1 button
-    text("Level 2", 525, 430);
+    image(buttonImg, 265, 390, buttonImg.width, buttonImg.height);
+
   } //else {
     //player.x = -750;
     //player.y = 450;
@@ -302,23 +315,20 @@ window.draw = () => {
 }
 
 window.mouseClicked = () => {
-  if (menu == 1) {
-    if (mouseX > 100 && mouseX < 350) { // lvl 1
+  if (level == 0) {
+    if (mouseX > 265 && mouseX < 493) { // lvl 1
       if (mouseY > 390 && mouseY < 470) {
         level = 1;
         console.log("You are now on the level 1!");
       }
-    } else if (mouseX > 400 && mouseX < 650) {
-      if (mouseY > 390 && mouseY < 470) {
-        level = 2;
-        console.log("You are now on the level 2!");
-
-      }
+    }
     }
   }
-}
 
 function levels() {
+  player.x = -750;
+  player.y = 450;
+
 // level selector
   if (level == 1) {
     lives = 3;
