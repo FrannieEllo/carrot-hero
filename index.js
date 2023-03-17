@@ -7,7 +7,8 @@ let playerIdle, playerJump, playerSuccess, playerDamage, bugsDefault;
 let tutorialMessage
 let walls, bgm, pickup;
 let carrotsDefault;
-let img, uncollectedimg, collectedimg, barnimg, bgImg, buttonImg, logoImg, gameoverImg, menubuttonImg;
+let img, uncollectedimg, collectedimg, barnimg, bgImg, buttonImg, logoImg;
+let gameoverImg, menubuttonImg, gameCompleteimg, lvl1img, lvl2img, playAgainImg;
 var x1 = 0;
 var x2;
 var scrollSpeed = 0.25;
@@ -28,7 +29,11 @@ window.setup = () => {
   buttonImg = loadImage("./assets/button.png");
   logoImg = loadImage("./assets/carrot-hero-logo.png");
   gameoverImg = loadImage("./assets/game-over.png");
-  menubuttonImg = loadImage("./assets/menu-button.png")
+  menubuttonImg = loadImage("./assets/menu-button.png");
+  gameCompleteimg = loadImage("./assets/game-complete.png");
+  lvl1img = loadImage("./assets/level-1.png");
+  lvl2img = loadImage("./assets/level-2.png");
+  playAgainImg = loadImage("./assets/play-again.png")
 
 
   // background & environment main
@@ -146,9 +151,6 @@ window.setup = () => {
   //bugs.collider = "static";
   bugs.friction = 0;
   bugs.collider = "kinematic";
-  
-  // run game
-  //levels();
 
 }
 
@@ -175,15 +177,24 @@ window.draw = () => {
     image(barnimg, 245, 150, barnimg.width / 2, barnimg.height / 2)
     image(buttonImg, 265, 390, buttonImg.width, buttonImg.height);
 
-  } else if (level == -1) {
+  } else if (level == -1) { // game over menu
     player.x = 0;
     player.y = 0;
     player.visible = false;
     image(gameoverImg, 60, 150, gameoverImg.width, gameoverImg.height);
     image(menubuttonImg, 265, 325, menubuttonImg.width, menubuttonImg.height);
+  } else if (level == -2) { // game complete -> you win!
+    player.x = 0;
+    player.y = 0;
+    player.visible = false;
+    player.ani = playerSuccess;
+    image(gameCompleteimg, 125, 130, gameCompleteimg.width / 1.25, gameCompleteimg.height / 1.25);
+    image(playAgainImg, 265, 325, menubuttonImg.width, menubuttonImg.height);
+
+    
   }
 
-  if (level != 0 && level != -1) {
+  if (level != 0 && level != -1 && level != -2) {
     if (lives == 3) {
       image(img, 150, 50);
       image(img, 100, 50);
@@ -215,10 +226,9 @@ window.draw = () => {
 
 
 
-  // tutorial message events
 
   tutorialMessage = "";
-  if (level == 1 ) {
+  if (level == 1 ) { // tutorial message events, only relevant to 1st level
     if (player.x > -800 && player.x < -375) {
       tutorialMessage = "Welcome to Carrot Hero! Use your Right and Left arrow keys to move.";
     } else if (player.x > -400 && player.x < 540) {
@@ -229,6 +239,10 @@ window.draw = () => {
       tutorialMessage = "and watch out for surprises ;)";
   
     }
+  } else if (level == 2) {
+    if (player.x > -800 && player.x < -375) {
+      tutorialMessage = "Seems like you got a hang of it. Onto level 2!";
+    }
   }
 
   
@@ -236,8 +250,10 @@ window.draw = () => {
   text(tutorialMessage, width / 2, 150);
   textAlign(CENTER);
 
-  text("(" + mouseX + ", " + mouseY + ")", mouseX, mouseY);
-  allSprites.debug = mouse.pressing();
+
+  // following lines are uncommented for debugging purposes
+  // text("(" + mouseX + ", " + mouseY + ")", mouseX, mouseY);
+  // allSprites.debug = mouse.pressing();
   
   carrots.ani = carrotsDefault;
   if (player.overlapped(carrots)) {
@@ -326,11 +342,10 @@ window.mouseClicked = () => {
         console.log("You are now on the level " + level);
       }
     }
-  } else if (level == -1) {
-      if (mouseX > 265 && mouseX < 493) { // game over to menu
+  } else if (level == -1 || level == -2) {
+      if (mouseX > 265 && mouseX < 493) { // back to menu from game over or game complete
         if (mouseY > 325 && mouseY < 400) {
           level = 0;
-          //levels();
           console.log("You are now on game menu.");
           console.log(level);
         }
@@ -342,17 +357,15 @@ function levels() {
   player.x = -750;
   player.y = 450;
 
-// level selector
+  // level selector
   if (level == 1) { // begin level 1
-    // clear previous level items
-      clearPrevLevel()
+    clearPrevLevel() // clear previous level items
 
     lives = 3;
     score = 0;
     console.log("You're on level " + level);
    
     // lvl 1 barriers
-    
     let wallTop = new walls.Sprite(400, 0);
     wallTop.rotation = 90;
 
@@ -427,9 +440,8 @@ function levels() {
     player.overlaps(exit1);
 
   } else if (level == 2) {// close level 1, start level 2
-
-    // remove all level 1 items
-    clearPrevLevel()
+    
+    clearPrevLevel() // remove all level 1 items
 
     // level 2 start
     console.log("You're on level " + level);
@@ -530,7 +542,10 @@ function levels() {
 
     let exit2 = new exit.Sprite(5000, 275);
     player.overlaps(exit2);
-  } // end level 2
+    // end level 2
+  } else if (level == 3) {
+      level = -2;
+  }
 }
 
 async function bugSequence() {
@@ -555,6 +570,7 @@ function collect(player, carrots) {
 
 function gameOver() {
   if (lives == 0) {
+    clearPrevLevel()
     level = -1;
     player.visible = false;
     console.log("Game Over. You ran out of lives! Refresh to restart.");
@@ -562,7 +578,7 @@ function gameOver() {
 }
 
 function clearPrevLevel() { // removes all previous sprites and tiles to reset for new level
-  platform.remove();
+  platform.remove();        // without this function, previous tiles/sprites will overlap other levels
   bugs.remove();
   walls.remove();
   spikes.remove();
