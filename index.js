@@ -344,6 +344,9 @@ function levels() {
 
 // level selector
   if (level == 1) { // begin level 1
+    // clear previous level items
+      clearPrevLevel()
+
     lives = 3;
     score = 0;
     console.log("You're on level " + level);
@@ -424,10 +427,14 @@ function levels() {
     player.overlaps(exit1);
 
   } else if (level == 2) {// close level 1, start level 2
+
+    // remove all level 1 items
+    clearPrevLevel()
+
+    // level 2 start
     console.log("You're on level " + level);
-    lives = 3;
     score = 0;
-    // lvl template
+
     // lvl 2 barriers
     
     let wallTop = new walls.Sprite(400, -500);
@@ -552,4 +559,14 @@ function gameOver() {
     player.visible = false;
     console.log("Game Over. You ran out of lives! Refresh to restart.");
   }
+}
+
+function clearPrevLevel() { // removes all previous sprites and tiles to reset for new level
+  platform.remove();
+  bugs.remove();
+  walls.remove();
+  spikes.remove();
+  carrots.remove();
+  falling.remove();
+  ground.remove();
 }
