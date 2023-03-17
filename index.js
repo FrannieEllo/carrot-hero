@@ -7,7 +7,7 @@ let playerIdle, playerJump, playerSuccess, playerDamage, bugsDefault;
 let tutorialMessage
 let walls, bgm, pickup;
 let carrotsDefault;
-let img, uncollectedimg, collectedimg, barnimg, bgImg, buttonImg, logoImg;
+let img, uncollectedimg, collectedimg, barnimg, bgImg, buttonImg, logoImg, gameoverImg, menubuttonImg;
 var x1 = 0;
 var x2;
 var scrollSpeed = 0.25;
@@ -15,7 +15,6 @@ var score = 0;
 var lives = 3;
 var timer = 0;
 var level = 0;
-var menu = 0;
 let total = "Carrots: " + score;
 let hp = "Lives: " + lives; 
 
@@ -28,6 +27,9 @@ window.setup = () => {
   barnimg = loadImage("./assets/barn.png");
   buttonImg = loadImage("./assets/button.png");
   logoImg = loadImage("./assets/carrot-hero-logo.png");
+  gameoverImg = loadImage("./assets/game-over.png");
+  menubuttonImg = loadImage("./assets/menu-button.png")
+
 
   // background & environment main
   createCanvas(800, 500);
@@ -35,13 +37,20 @@ window.setup = () => {
   score = 0;
   x2 = width;
 
+  // exit barn
+  exit = new Group();
+  exit.width = 200;
+  exit.height = 400;
+  exit.collider = "static";
+  exit.img = "./assets/barn.png"
+  exit.layer = 1;
 
   // main player
   player = new Sprite(-750, 450);
   player.width = 48;
   player.height = 112;
   player.rotationLock = true;
-
+  player.layer = 2;
 
   // idle animation
   playerIdle = loadAnimation(
@@ -86,12 +95,6 @@ window.setup = () => {
   walls.height = 4000;
   walls.collider = "static";
   walls.visible = false;
-
-  exit = new Group();
-  exit.width = 200;
-  exit.height = 400;
-  exit.collider = "static";
-  exit.img = "./assets/barn.png"
 
 
   // ground platforms main
@@ -143,14 +146,10 @@ window.setup = () => {
   //bugs.collider = "static";
   bugs.friction = 0;
   bugs.collider = "kinematic";
-
-  // run game
-  levels();
-
-}
-
-function game() {
   
+  // run game
+  //levels();
+
 }
 
 window.draw = () => {
@@ -167,21 +166,24 @@ window.draw = () => {
   if (x2 < -width){
     x2 = width;
   }
-    player.overlaps(exit);
   if (level == 0) { // game menu
     player.x = 0;
     player.y = 0;
+    player.visible = true;
     // menu
     image(logoImg, 220, 25, logoImg.width, logoImg.height);
     image(barnimg, 245, 150, barnimg.width / 2, barnimg.height / 2)
     image(buttonImg, 265, 390, buttonImg.width, buttonImg.height);
 
-  } //else {
-    //player.x = -750;
-    //player.y = 450;
- // }
-  // hud - health
-  if (level != 0) {
+  } else if (level == -1) {
+    player.x = 0;
+    player.y = 0;
+    player.visible = false;
+    image(gameoverImg, 60, 150, gameoverImg.width, gameoverImg.height);
+    image(menubuttonImg, 265, 325, menubuttonImg.width, menubuttonImg.height);
+  }
+
+  if (level != 0 && level != -1) {
     if (lives == 3) {
       image(img, 150, 50);
       image(img, 100, 50);
@@ -206,6 +208,9 @@ window.draw = () => {
 
     hp = "Lives: " + lives;
     text(hp, 300, 60);
+
+    gameOver();
+
   }
 
 
@@ -286,12 +291,10 @@ window.draw = () => {
 
   // collision events
   if (player.overlapping(exit)) {
-    let msg = "Woohoo! You made it to the end with " + score + " carrots!! Starting next level in 5 seconds..."
+    let msg = "Woohoo! You made it to the end with " + score + " carrots!!"
     text(msg, width / 2, 90);
     textAlign(CENTER);
     console.log("That's the end! Thanks for playing.")
-    level+=1;
-    console.log(level);
     player.ani = playerSuccess;
   } else if (player.collides(g5)) {
     lives -= 1;
@@ -300,6 +303,7 @@ window.draw = () => {
   } else if (player.overlapped(exit)) {
     level+=1;
     console.log(level);
+    levels();
   }
 
   // damage to health bar
@@ -311,31 +315,36 @@ window.draw = () => {
     player.ani = playerDamage;
   }
 
-  if (lives == 0) {
-    gameOver();
-  }
-
 }
 
 window.mouseClicked = () => {
   if (level == 0) {
-    if (mouseX > 265 && mouseX < 493) { // lvl 1
+    if (mouseX > 265 && mouseX < 493) { // menu to level 1
       if (mouseY > 390 && mouseY < 470) {
         level = 1;
         levels();
-        console.log("You are now on the level 1!");
-        console.log("Player x: " + player.x + "  Player y: " + player.y);
+        console.log("You are now on the level " + level);
       }
     }
+  } else if (level == -1) {
+      if (mouseX > 265 && mouseX < 493) { // game over to menu
+        if (mouseY > 325 && mouseY < 400) {
+          level = 0;
+          //levels();
+          console.log("You are now on game menu.");
+          console.log(level);
+        }
+      }
   }
 }
 
 function levels() {
+  clear();
   player.x = -750;
   player.y = 450;
 
 // level selector
-  if (level == 1) {
+  if (level == 1) { // begin level 1
     lives = 3;
     score = 0;
     console.log("You're on level " + level);
@@ -359,12 +368,8 @@ function levels() {
     // lvl 1 stink bug
     let bug1 = new bugs.Sprite();
     bug1.x = 1000;
-    bug1.y = 450; // ask hannah in class
-    //if (bug1.x > 1100) {
-    //  bug1.vel.x = -1;
-    //} else if (bug1.x < 950) {
-    //  bug1.vel.x = 1;
-    //}
+    bug1.y = 450;
+    bugSequence();
 
     // lvl 1 carrots
     let carrot1 = new carrots.Sprite();
@@ -433,28 +438,20 @@ function levels() {
     new walls.Sprite(5250, 250);
 
     let g1 = new ground.Sprite(0, 500, 5600, 50);
-    //g1.img = "./assets/g1.png"
+    g1.img = "./assets/g6.png"
     let g2 = new ground.Sprite(4000, 500, 3000, 50);
-    //g2.img = "./assets/g2.png"
-
-    //let g4 = new ground.Sprite(3500, 500, 2000, 50)
-   // g4.img = "./assets/g4.png"
+    g2.img = "./assets/g7.png"
 
     // lvl 2 stink bugs
     let bug1 = new bugs.Sprite();
     bug1.x = 1250;
-    bug1.y = 450; 
+    bug1.y = 450;
+    bugSequence();
+
     
     let bug2 = new bugs.Sprite();
     bug2.x = 1750;
     bug2.y = 450;
-    
-    // ask hannah in class
-    //if (bug1.x > 1100) {
-    //  bug1.vel.x = -1;
-    //} else if (bug1.x < 950) {
-    //  bug1.vel.x = 1;
-    //}
 
     // lvl 2 carrots
     let carrot1 = new carrots.Sprite();
@@ -491,10 +488,7 @@ function levels() {
     let spike2 = new spikes.Sprite();
     spike2.x = 2810;
     spike2.y = 385;
-    spike2.mirror.x = true;
-
-    // lvl template
-    
+    spike2.mirror.x = true;    
 
     // lvl 2 plat form tiles
     new Tiles(
@@ -530,7 +524,15 @@ function levels() {
 
     let exit2 = new exit.Sprite(5000, 275);
     player.overlaps(exit2);
-  }
+  } // end level 2
+}
+
+async function bugSequence() {
+  bugs.mirror.x = true;
+	await bugs.move(200);
+  bugs.mirror.x = false;
+	await bugs.move(-200);
+	bugSequence();
 }
 
 function resetPlayer() {
@@ -546,7 +548,9 @@ function collect(player, carrots) {
 }
 
 function gameOver() {
-  player.remove();
-  let msg = "Game Over. You ran out of lives! Refresh to restart."
-  text(msg, 250, 200);
+  if (lives == 0) {
+    level = -1;
+    player.visible = false;
+    console.log("Game Over. You ran out of lives! Refresh to restart.");
+  }
 }
