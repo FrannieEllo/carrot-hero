@@ -232,9 +232,9 @@ window.draw = () => {
     if (player.x > -800 && player.x < -375) {
       tutorialMessage = "Welcome to Carrot Hero! Use your Right and Left arrow keys to move.";
     } else if (player.x > -400 && player.x < 540) {
-      tutorialMessage = "Use your Up arrow key to jump!";
+      tutorialMessage = "Use your Up arrow key or spacebar to jump!";
     } else if (player.x > 600 && player.x < 1250) {
-      tutorialMessage = "Avoid the stink bugs...";
+      tutorialMessage = "Avoid the stink bugs...No jumping on them either!";
     } else if (player.x > 1400 && player.x < 2000) {
       tutorialMessage = "and watch out for surprises ;)";
   
@@ -285,7 +285,7 @@ window.draw = () => {
   }
 
   // player y movement
-  if (kb.presses("up")) {
+  if (kb.presses("up") || kb.presses("space")) {
     player.vel.y = -27;
     player.ani = playerJump;
   } else if (kb.pressing("down")) {
