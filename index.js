@@ -339,7 +339,6 @@ window.mouseClicked = () => {
 }
 
 function levels() {
-  clear();
   player.x = -750;
   player.y = 450;
 
