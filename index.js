@@ -583,4 +583,5 @@ function clearPrevLevel() { // removes all previous sprites and tiles to reset f
   carrots.remove();
   falling.remove();
   ground.remove();
+  exit.remove();
 }
